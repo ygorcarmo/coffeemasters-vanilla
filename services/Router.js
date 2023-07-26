@@ -8,6 +8,11 @@ const Router = {
         Router.go(url);
       });
     });
+    // Event Handler For URL Changes
+    window.addEventListener("popstate", (event) => {
+      Router.go(event.state.route, false);
+    });
+
     // Check the initial URL
     Router.go(location.pathname);
   },
@@ -16,6 +21,32 @@ const Router = {
 
     if (addToHistory) {
       history.pushState({ route }, "", route);
+    }
+
+    let pageElement = null;
+
+    switch (route) {
+      case "/":
+        pageElement = document.createElement("menu-page");
+        break;
+      case "/order":
+        pageElement = document.createElement("order-page");
+        break;
+      default:
+        if (route.startsWith("/product-")) {
+          pageElement = document.createElement("details-page");
+          const paramId = route.substring(route.lastIndexOf("-") + 1);
+          pageElement.dataset.id = paramId;
+        }
+    }
+
+    if (pageElement) {
+      // document.querySelector('main').children(0).remove();
+      const cache = document.querySelector("main");
+      cache.innerHTML = "";
+      cache.appendChild(pageElement);
+      window.scrollX = 0;
+      window.scrollY = 0;
     }
   },
 };
